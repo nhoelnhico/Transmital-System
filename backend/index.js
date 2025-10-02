@@ -1,7 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
-const path = require('path');
 const csv = require('csv-express');
 
 const app = express();
@@ -51,23 +50,7 @@ app.post('/api/transmittals', (req, res) => {
   });
 });
 
-// 2. Route for Global Search
-app.get('/api/search', (req, res) => {
-  const { query } = req.query;
-  const searchTerm = `%${query}%`;
-  const sql = `
-    SELECT * FROM transmittals
-    WHERE to_entity LIKE ? OR from_entity LIKE ? OR item_description LIKE ? OR barcode_tag_number LIKE ? OR signature_id LIKE ?
-  `;
-  db.query(sql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, results) => {
-    if (err) {
-      return res.status(500).send({ message: 'Error searching records.' });
-    }
-    res.json(results);
-  });
-});
-
-// 3. Route for Dashboard Counts
+// 2. Route for Dashboard Counts
 app.get('/api/dashboard', (req, res) => {
   const sql = `
     SELECT
@@ -80,6 +63,22 @@ app.get('/api/dashboard', (req, res) => {
       return res.status(500).send({ message: 'Error fetching dashboard data.' });
     }
     res.json(results[0]);
+  });
+});
+
+// 3. Route for Global Search
+app.get('/api/search', (req, res) => {
+  const { query } = req.query;
+  const searchTerm = `%${query}%`;
+  const sql = `
+    SELECT * FROM transmittals
+    WHERE to_entity LIKE ? OR from_entity LIKE ? OR item_description LIKE ? OR barcode_tag_number LIKE ? OR signature_id LIKE ?
+  `;
+  db.query(sql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, results) => {
+    if (err) {
+      return res.status(500).send({ message: 'Error searching records.' });
+    }
+    res.json(results);
   });
 });
 
@@ -98,7 +97,8 @@ app.get('/api/transactions/:id', (req, res) => {
 // 5. Route to download transactions as CSV
 app.get('/api/transactions/:id/download', (req, res) => {
   const identifier = req.params.id;
-  const sql = 'SELECT transaction_date, to_entity, from_entity, item_description, barcode_tag_number, signature_id FROM transmittals WHERE barcode_tag_number = ? OR signature_id = ? ORDER BY transaction_date DESC';
+  // NOTE: 'transaction_type' is added to the SELECT statement
+  const sql = 'SELECT transaction_date, transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id FROM transmittals WHERE barcode_tag_number = ? OR signature_id = ? ORDER BY transaction_date DESC';
   
   db.query(sql, [identifier, identifier], (err, results) => {
     if (err) {

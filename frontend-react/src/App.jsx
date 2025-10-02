@@ -1,3 +1,5 @@
+// frontend-react/src/App.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Dashboard from './components/Dashboard';
@@ -9,6 +11,7 @@ import './App.css';
 function App() {
   const [inCount, setInCount] = useState(0);
   const [outCount, setOutCount] = useState(0);
+  const [refreshLogs, setRefreshLogs] = useState(0); // New state to trigger log refresh
 
   const fetchDashboardCounts = async () => {
     try {
@@ -18,6 +21,11 @@ function App() {
     } catch (error) {
       console.error('Error fetching dashboard counts:', error);
     }
+  };
+
+  const handleTransactionAdded = () => {
+    fetchDashboardCounts();
+    setRefreshLogs(prev => prev + 1); // Increment state to trigger log refresh
   };
 
   useEffect(() => {
@@ -31,9 +39,9 @@ function App() {
       </header>
       <main>
         <Dashboard inCount={inCount} outCount={outCount} />
-        <TransactionForm onTransactionAdded={fetchDashboardCounts} />
+        <TransactionForm onTransactionAdded={handleTransactionAdded} />
         <Search />
-        <ActivityLog />
+        <ActivityLog refreshSignal={refreshLogs} />
       </main>
     </div>
   );
