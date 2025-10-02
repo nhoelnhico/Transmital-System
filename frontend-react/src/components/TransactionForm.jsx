@@ -62,11 +62,13 @@ function TransactionForm({ onTransactionAdded }) {
         <label htmlFor="barcode_tag_number">Barcode / Tagging Number:</label>
         <input type="text" id="barcode_tag_number" value={formData.barcode_tag_number} onChange={handleChange} required />
         
+        <label htmlFor="quantity">Quantity:</label>
+        <input type="number" id="quantity" value={formData.quantity} onChange={handleChange} required />
+        
         <label htmlFor="signature_id">Signature ID:</label>
         <input type="text" id="signature_id" value={formData.signature_id} onChange={handleChange} required />
         
-        <label htmlFor="quantity">Quantity:</label>
-        <input type="number" id="quantity" value={formData.quantity} onChange={handleChange} required />
+        
         
         <button type="submit">Submit Record</button>
       </form>
