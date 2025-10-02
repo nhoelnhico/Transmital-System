@@ -1,5 +1,3 @@
-// frontend-react/src/components/TransactionForm.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -11,6 +9,7 @@ function TransactionForm({ onTransactionAdded }) {
     item_description: '',
     barcode_tag_number: '',
     signature_id: '',
+    quantity: ''
   });
 
   const handleChange = (e) => {
@@ -31,8 +30,9 @@ function TransactionForm({ onTransactionAdded }) {
           item_description: '',
           barcode_tag_number: '',
           signature_id: '',
+          quantity: ''
         });
-        onTransactionAdded(); // Calls the function from App.jsx
+        onTransactionAdded();
       }
     } catch (error) {
       alert('Error submitting transaction.');
@@ -41,7 +41,7 @@ function TransactionForm({ onTransactionAdded }) {
   };
 
   return (
-    <section id="forms">
+    <section>
       <h2>Record a Transaction</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="transaction_type">Transaction Type:</label>
@@ -49,22 +49,25 @@ function TransactionForm({ onTransactionAdded }) {
           <option value="In">In</option>
           <option value="Out">Out</option>
         </select>
-
+        
         <label htmlFor="to">To:</label>
         <input type="text" id="to" value={formData.to} onChange={handleChange} required />
-
+        
         <label htmlFor="from">From:</label>
         <input type="text" id="from" value={formData.from} onChange={handleChange} required />
-
+        
         <label htmlFor="item_description">Item Description:</label>
         <textarea id="item_description" value={formData.item_description} onChange={handleChange} required></textarea>
-
+        
         <label htmlFor="barcode_tag_number">Barcode / Tagging Number:</label>
         <input type="text" id="barcode_tag_number" value={formData.barcode_tag_number} onChange={handleChange} required />
-
+        
         <label htmlFor="signature_id">Signature ID:</label>
         <input type="text" id="signature_id" value={formData.signature_id} onChange={handleChange} required />
-
+        
+        <label htmlFor="quantity">Quantity:</label>
+        <input type="number" id="quantity" value={formData.quantity} onChange={handleChange} required />
+        
         <button type="submit">Submit Record</button>
       </form>
     </section>

@@ -1,5 +1,3 @@
-// frontend-react/src/components/ActivityLog.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -17,10 +15,10 @@ function ActivityLog({ refreshSignal }) {
 
   useEffect(() => {
     fetchActivityLogs();
-  }, [refreshSignal]); // Now depends on the refreshSignal state
+  }, [refreshSignal]);
 
   return (
-    <section id="activity-logs">
+    <section>
       <h2>Activity Logs</h2>
       <div id="logs-list">
         {logs.length > 0 ? (

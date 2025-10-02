@@ -2,14 +2,14 @@ import React from 'react';
 
 function Dashboard({ inCount, outCount }) {
   return (
-    <section id="dashboard">
+    <section>
       <h2>Dashboard</h2>
       <div className="dashboard-stats">
-        <div className="stat-card in-count">
+        <div className="stat-card">
           <h3>Items "In"</h3>
           <p>{inCount}</p>
         </div>
-        <div className="stat-card out-count">
+        <div className="stat-card">
           <h3>Items "Out"</h3>
           <p>{outCount}</p>
         </div>

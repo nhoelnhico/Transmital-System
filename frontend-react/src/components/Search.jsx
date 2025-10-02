@@ -12,24 +12,26 @@ function Search() {
 
     const headers = Object.keys(data[0]);
     return (
-      <table className="data-table">
-        <thead>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>{header.replace(/_/g, ' ')}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
+      <div className="table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
               {headers.map((header) => (
-                <td key={header}>{item[header]}</td>
+                <th key={header}>{header.replace(/_/g, ' ')}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
+              <tr key={index}>
+                {headers.map((header) => (
+                  <td key={header}>{item[header]}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
   };
 
@@ -66,7 +68,7 @@ function Search() {
 
   return (
     <>
-      <section id="search">
+      <section>
         <h2>Global Search</h2>
         <div className="search-input-container">
           <input
@@ -80,7 +82,7 @@ function Search() {
         <div id="search-results">{createTable(searchResults)}</div>
       </section>
 
-      <section id="transaction-history">
+      <section>
         <h2>Transaction History by ID</h2>
         <div className="search-input-container">
           <input
@@ -95,9 +97,11 @@ function Search() {
           {createTable(transactionHistory)}
         </div>
         {transactionHistory.length > 0 && (
-          <button id="download-csv-btn" onClick={handleDownload}>
-            Download CSV
-          </button>
+          <div className="download-btn-container">
+            <button id="download-csv-btn" onClick={handleDownload}>
+              Download CSV
+            </button>
+          </div>
         )}
       </section>
     </>

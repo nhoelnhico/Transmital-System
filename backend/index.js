@@ -9,8 +9,8 @@ const port = 3000;
 // Database connection details
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root', // default XAMPP user
-  password: '', // default XAMPP password
+  user: 'root',
+  password: '',
   database: 'transmittal_db'
 });
 
@@ -30,20 +30,20 @@ app.use(express.json());
 
 // 1. Route to add a new 'In' or 'Out' record
 app.post('/api/transmittals', (req, res) => {
-  const { transaction_type, to, from, item_description, barcode_tag_number, signature_id } = req.body;
+  const { transaction_type, to, from, item_description, barcode_tag_number, signature_id, quantity } = req.body;
   
-  if (!transaction_type || !to || !from || !item_description || !barcode_tag_number || !signature_id) {
+  if (!transaction_type || !to || !from || !item_description || !barcode_tag_number || !signature_id || !quantity) {
     return res.status(400).send({ message: 'All fields are required.' });
   }
 
-  const query = 'INSERT INTO transmittals (transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id) VALUES (?, ?, ?, ?, ?, ?)';
-  db.query(query, [transaction_type, to, from, item_description, barcode_tag_number, signature_id], (err, result) => {
+  const query = 'INSERT INTO transmittals (transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  db.query(query, [transaction_type, to, from, item_description, barcode_tag_number, signature_id, quantity], (err, result) => {
     if (err) {
       console.error('Error adding record:', err);
       return res.status(500).send({ message: 'Internal Server Error' });
     }
-    // Add to activity log
-    const logAction = `Added new '${transaction_type}' record for item: ${barcode_tag_number}`;
+    // Add to activity log with quantity
+    const logAction = `Added new '${transaction_type}' record for item: ${barcode_tag_number} (Qty: ${quantity})`;
     db.query('INSERT INTO activity_logs (action) VALUES (?)', [logAction]);
     
     res.status(201).send({ message: 'Record added successfully!', id: result.insertId });
@@ -72,9 +72,9 @@ app.get('/api/search', (req, res) => {
   const searchTerm = `%${query}%`;
   const sql = `
     SELECT * FROM transmittals
-    WHERE to_entity LIKE ? OR from_entity LIKE ? OR item_description LIKE ? OR barcode_tag_number LIKE ? OR signature_id LIKE ?
+    WHERE to_entity LIKE ? OR from_entity LIKE ? OR item_description LIKE ? OR barcode_tag_number LIKE ? OR signature_id LIKE ? OR quantity LIKE ?
   `;
-  db.query(sql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, results) => {
+  db.query(sql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, results) => {
     if (err) {
       return res.status(500).send({ message: 'Error searching records.' });
     }
@@ -97,8 +97,7 @@ app.get('/api/transactions/:id', (req, res) => {
 // 5. Route to download transactions as CSV
 app.get('/api/transactions/:id/download', (req, res) => {
   const identifier = req.params.id;
-  // NOTE: 'transaction_type' is added to the SELECT statement
-  const sql = 'SELECT transaction_date, transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id FROM transmittals WHERE barcode_tag_number = ? OR signature_id = ? ORDER BY transaction_date DESC';
+  const sql = 'SELECT transaction_date, transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id, quantity FROM transmittals WHERE barcode_tag_number = ? OR signature_id = ? ORDER BY transaction_date DESC';
   
   db.query(sql, [identifier, identifier], (err, results) => {
     if (err) {
@@ -108,8 +107,7 @@ app.get('/api/transactions/:id/download', (req, res) => {
       return res.status(404).send({ message: 'No transactions found for this ID.' });
     }
     
-    // Set headers for CSV download
-    res.csv(results, true); // true adds headers
+    res.csv(results, true);
   });
 });
 
