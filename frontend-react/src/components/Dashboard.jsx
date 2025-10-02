@@ -2,7 +2,7 @@ import React from 'react';
 
 function Dashboard({ inCount, outCount }) {
   return (
-    <section>
+    <section id="dashboard-section"> {/* Add the ID here */}
       <h2>Dashboard</h2>
       <div className="dashboard-stats">
         <div className="stat-card">

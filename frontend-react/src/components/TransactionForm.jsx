@@ -41,7 +41,7 @@ function TransactionForm({ onTransactionAdded }) {
   };
 
   return (
-    <section>
+    <section id="transaction-form-section"> {/* Add the ID here */}
       <h2>Record a Transaction</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="transaction_type">Transaction Type:</label>

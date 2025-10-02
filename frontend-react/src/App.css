@@ -1,246 +1,295 @@
-/* Color Palette:
-   Background: #F7F9FC
-   Card Background: #FFFFFF
-   Primary/Accent: #1A344E (a deep, professional blue)
-   Text: #3F5267
-   Borders/Shadows: a soft gray
+/*
+  Modern Dashboard Redesign
+  - Colors: A deep blue-gray primary, soft grays, and a clean white.
+  - Layout: A simple, single-column stack that centers content.
 */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
 
-/* --- General Styles --- */
+:root {
+  --color-primary: #1A344E;
+  --color-secondary: #E0E7ED;
+  --color-background: #F7F9FC;
+  --color-card-bg: #FFFFFF;
+  --color-text-dark: #3F5267;
+  --color-text-light: #F0F4F8;
+  --color-accent: #2c5282;
+}
+
 body {
-    font-family: 'Nunito', sans-serif;
-    background-color: #F7F9FC;
-    color: #3F5267;
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
 }
 
 #root {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
+/* --- Header --- */
 header {
-    background-color: #1A344E;
-    color: white;
-    padding: 1.5rem 0;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  padding: 2rem 0;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 header h1 {
-    margin: 0;
-    font-weight: 600;
-    letter-spacing: 1px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  padding: 10px;
+}
+
+/* --- Main Content Layout --- */
+.main-container {
+  /* This flex container will center the main content */
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  width: 100%;
 }
 
 main {
-    flex-grow: 1;
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 1rem;
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr;
+  /* This is the content wrapper that gets centered */
+  max-width: 1400px;
+  width: 100%;
+  margin: 2.5rem 0;
+  padding: 0 2rem;
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: 1fr;
 }
 
 /* --- Card Sections --- */
 section {
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-    padding: 2rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--color-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
 }
 
 h2 {
-    color: #1A344E;
-    border-bottom: 2px solid #E0E7ED;
-    padding-bottom: 0.75rem;
-    margin-top: 0;
-    margin-bottom: 2rem;
-    font-weight: 700;
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  font-size: 1.75rem;
 }
 
 /* --- Dashboard Section --- */
 .dashboard-stats {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    justify-content: space-around;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
 .stat-card {
-    background-color: #F0F4F8;
-    padding: 1.5rem;
-    border-radius: 10px;
-    text-align: center;
-    flex: 1 1 200px;
-    transition: background-color 0.2s ease;
+  background-color: var(--color-background);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  flex: 1 1 220px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .stat-card:hover {
-    background-color: #E6EEF6;
+  background-color: #f2f5f9;
+  transform: translateY(-4px);
 }
 
 .stat-card h3 {
-    margin: 0 0 0.5rem;
-    font-weight: 600;
-    color: #3F5267;
+  margin: 0 0 1rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
 }
 
 .stat-card p {
-    font-size: 2.8rem;
-    font-weight: 700;
-    color: #1A344E;
-    margin: 0;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin: 0;
 }
 
 /* --- Forms, Inputs, and Buttons --- */
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 label {
-    font-weight: 600;
-    color: #5A6D80;
-    margin-bottom: -1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: -1rem;
+  font-size: 1.1rem;
 }
 
 input,
 textarea,
 select {
-    width: 100%;
-    padding: 1rem;
-    border: 1px solid #D9E0E7;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 1rem;
-    color: #3F5267;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--color-secondary);
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    outline: none;
-    border-color: #1A344E;
-    box-shadow: 0 0 0 3px rgba(26, 52, 78, 0.1);
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(44, 82, 130, 0.15);
 }
 
 textarea {
-    resize: vertical;
+  resize: vertical;
 }
 
 button {
-    background-color: #1A344E;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+  background-color: var(--color-primary);
+  color: white;
+  padding: 1.25rem 2.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
-    background-color: #24405C;
-    transform: translateY(-2px);
+  background-color: var(--color-accent);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 .search-input-container {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .search-input-container input {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 /* --- Table Styles --- */
+.table-container {
+    background-color: var(--color-card-bg);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
 .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.5rem;
-    font-size: 0.95rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
 }
 
 .data-table th,
 .data-table td {
-    border-bottom: 1px solid #E0E7ED;
-    padding: 1rem;
-    text-align: left;
+  border-bottom: 1px solid var(--color-secondary);
+  padding: 1.25rem;
+  text-align: left;
 }
 
 .data-table th {
-    background-color: #F7F9FC;
-    font-weight: 600;
-    color: #1A344E;
+  background-color: var(--color-background);
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
 }
 
 .data-table tbody tr:hover {
-    background-color: #F0F4F8;
+  background-color: var(--color-text-light);
 }
 
 /* --- Activity Log List --- */
 #logs-list ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 #logs-list li {
-    background: #F7F9FC;
-    padding: 1rem;
-    border-left: 4px solid #1A344E;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-    transition: background-color 0.2s ease;
+  background: var(--color-card-bg); /* Match the card background */
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Add a subtle shadow */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 #logs-list li:hover {
-    background-color: #E6EEF6;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.log-timestamp {
+  display: block;
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.log-action {
+  display: block;
+  font-weight: 600;
+  color: var(--color-text-dark);
 }
 
 /* --- Media Queries --- */
 @media (max-width: 768px) {
-    main {
-        margin: 1rem;
-        padding: 0.5rem;
-        gap: 1.5rem;
-    }
+  main {
+    margin: 1.5rem;
+    padding: 0;
+    gap: 1.5rem;
+  }
+  
+  section {
+    padding: 2rem;
+  }
+  
+  .dashboard-stats {
+    flex-direction: column;
+  }
+  
+  .search-input-container {
+    flex-direction: column;
+  }
 
-    section {
-        padding: 1.5rem;
-    }
-    
-    .dashboard-stats {
-        flex-direction: column;
-    }
-    
-    .search-input-container {
-        flex-direction: column;
-    }
+  button {
+    width: 100%;
+  }
 
-    button {
-        width: 100%;
-    }
-
-    .data-table th,
-    .data-table td {
-        padding: 0.75rem;
-        font-size: 0.85rem;
-    }
+  .data-table th,
+  .data-table td {
+    padding: 1rem;
+    font-size: 0.85rem;
+  }
 }

@@ -68,7 +68,7 @@ function Search() {
 
   return (
     <>
-      <section>
+      <section id="search-section">
         <h2>Global Search</h2>
         <div className="search-input-container">
           <input
@@ -82,7 +82,7 @@ function Search() {
         <div id="search-results">{createTable(searchResults)}</div>
       </section>
 
-      <section>
+      <section id="history-section">
         <h2>Transaction History by ID</h2>
         <div className="search-input-container">
           <input

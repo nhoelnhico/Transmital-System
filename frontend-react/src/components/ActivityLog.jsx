@@ -14,11 +14,11 @@ function ActivityLog({ refreshSignal }) {
   };
 
   useEffect(() => {
-    fetchActivityLogs();
+      fetchActivityLogs();
   }, [refreshSignal]);
 
   return (
-    <section>
+    <section id="logs-section"> {/* Add the ID here */}
       <h2>Activity Logs</h2>
       <div id="logs-list">
         {logs.length > 0 ? (

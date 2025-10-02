@@ -33,14 +33,16 @@ function App() {
   return (
     <div id="root">
       <header>
-        <h1>Transmittal Record System</h1>
+        <h1> IT Department - Transmittal Record System</h1>
       </header>
-      <main>
-        <Dashboard inCount={inCount} outCount={outCount} />
-        <TransactionForm onTransactionAdded={handleTransactionAdded} />
-        <Search />
-        <ActivityLog refreshSignal={refreshLogs} />
-      </main>
+      <div className="main-container">
+        <main>
+          <Dashboard inCount={inCount} outCount={outCount} />
+          <TransactionForm onTransactionAdded={handleTransactionAdded} />
+          <Search />
+          <ActivityLog refreshSignal={refreshLogs} />
+        </main>
+      </div>
     </div>
   );
 }
