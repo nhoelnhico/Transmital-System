@@ -6,7 +6,6 @@
   Develop by Nhico Noel Ortazon
 
 */
-
 :root {
   --color-primary: #1A344E;
   --color-secondary: #E0E7ED;
@@ -24,12 +23,20 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* --- Header --- */
@@ -39,6 +46,10 @@ header {
   padding: 2rem 0;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 header h1 {
@@ -48,6 +59,27 @@ header h1 {
   font-size: 2.5rem;
   text-transform: uppercase;
   padding: 10px;
+  width: 100%;
+  max-width: 95vw;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+@media (max-width: 600px) {
+  body {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  #root {
+    max-width: 100vw;
+  }
+  header {
+    padding: 1.2rem 0;
+  }
+  header h1 {
+    font-size: 1.5rem;
+    padding: 6px;
+  }
 }
 
 /* --- Main Content Layout --- */
@@ -268,6 +300,13 @@ button:hover {
 
 /* --- Media Queries --- */
 @media (max-width: 768px) {
+  body {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  #root {
+    max-width: 100vw;
+  }
   main {
     margin: 1.5rem;
     padding: 0;
