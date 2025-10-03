@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
-const { Parser } = require('json2csv'); // REQUIRED: For CSV generation
+const { Parser } = require('json2csv'); 
 
 const app = express();
 const port = 5000;
@@ -29,7 +29,7 @@ db.connect(err => {
 app.use(cors());
 app.use(express.json());
 
-// Helper function to handle CSV generation
+// Helper function to convert DB results to CSV response
 const generateCsvResponse = (res, results, filename) => {
     if (results.length === 0) {
         return res.status(404).send('No records found to download.');
@@ -124,7 +124,7 @@ app.get('/api/activity-logs', (req, res) => {
     });
 });
 
-// ROUTE 5: Fetch Transaction History by ID (No ORDER BY clause applied)
+// ROUTE 5: Fetch Transaction History by ID 
 app.get('/api/transactions/:id', (req, res) => {
     const historyId = req.params.id;
     const query = `
@@ -140,12 +140,43 @@ app.get('/api/transactions/:id', (req, res) => {
     });
 });
 
+// ROUTE 6: Fetch Dashboard Counts (FIXES DASHBOARD)
+app.get('/api/dashboard', async (req, res) => {
+    const countInQuery = "SELECT COUNT(*) AS count_in FROM transmittals WHERE transaction_type = 'In'";
+    const countOutQuery = "SELECT COUNT(*) AS count_out FROM transmittals WHERE transaction_type = 'Out'";
+
+    const getCount = (query) => {
+        return new Promise((resolve, reject) => {
+            db.query(query, (err, results) => {
+                if (err) return reject(err);
+                resolve(results[0]);
+            });
+        });
+    };
+
+    try {
+        const [inResult, outResult] = await Promise.all([
+            getCount(countInQuery),
+            getCount(countOutQuery)
+        ]);
+
+        res.json({
+            count_in: inResult.count_in,
+            count_out: outResult.count_out
+        });
+
+    } catch (error) {
+        console.error('Error fetching dashboard counts:', error);
+        res.status(500).send({ message: 'Internal Server Error fetching counts.' });
+    }
+});
+
 
 // =========================================================================
-// CSV DOWNLOAD ROUTES (Requires json2csv)
+// CSV DOWNLOAD ROUTES
 // =========================================================================
 
-// ROUTE 6: Download ALL Transmittals as CSV
+// ROUTE 7: Download ALL Transmittals as CSV
 app.get('/api/transmittals/download/all', (req, res) => {
     const query = 'SELECT * FROM transmittals';
     db.query(query, (err, results) => {
@@ -157,7 +188,7 @@ app.get('/api/transmittals/download/all', (req, res) => {
     });
 });
 
-// ROUTE 7: Download Transaction History by ID as CSV
+// ROUTE 8: Download Transaction History by ID as CSV
 app.get('/api/transactions/:id/download', (req, res) => {
     const historyId = req.params.id;
     const query = `
@@ -174,11 +205,10 @@ app.get('/api/transactions/:id/download', (req, res) => {
     });
 });
 
-// ROUTE 8: Download Search Results as CSV
+// ROUTE 9: Download Search Results as CSV
 app.get('/api/search/download', (req, res) => {
     const searchQuery = req.query.query || '';
     
-    // If query is empty, treat it as 'Download All'
     if (searchQuery.trim() === '') {
         return res.redirect('/api/transmittals/download/all');
     }
