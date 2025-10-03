@@ -7,10 +7,10 @@ const port = 5000; // NOTE: Port updated from 3000 to 5000
 
 // Database connection setup (Use your actual credentials)
 const db = mysql.createConnection({
-  host: 'localhost', 
-  user: 'root',      
-  password: 'your_mysql_password', 
-  database: 'your_database_name'   
+host: 'localhost', 
+ user: 'root', 
+password: '', // Correct for XAMPP (no password)
+database: 'transmittal_db'  // Correct Database Name
 });
 
 db.connect(err => {
