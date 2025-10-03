@@ -1,19 +1,19 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const { Parser } = require('json2csv'); // REQUIRED: For CSV generation
 
 const app = express();
 const port = 5000;
 
 // =========================================================================
-// !!! CORRECTED DATABASE CONNECTION !!!
-// Using XAMPP default: user 'root', password '' (empty string), and confirmed database name.
+// DATABASE CONNECTION (XAMPP Default)
 // =========================================================================
 const db = mysql.createConnection({
   host: 'localhost', 
   user: 'root',      
-  password: '', // <--- CORRECTED: Empty string for XAMPP default
-  database: 'transmittal_db' // <--- CORRECTED: Confirmed database name
+  password: '', 
+  database: 'transmittal_db'
 });
 
 db.connect(err => {
@@ -29,30 +29,49 @@ db.connect(err => {
 app.use(cors());
 app.use(express.json());
 
+// Helper function to handle CSV generation
+const generateCsvResponse = (res, results, filename) => {
+    if (results.length === 0) {
+        return res.status(404).send('No records found to download.');
+    }
+    try {
+        const fields = Object.keys(results[0]);
+        const json2csv = new Parser({ fields });
+        const csv = json2csv.parse(results);
+
+        res.header('Content-Type', 'text/csv');
+        res.attachment(filename);
+        res.send(csv);
+    } catch (error) {
+        console.error('Error converting to CSV:', error);
+        res.status(500).send('Error generating CSV file.');
+    }
+};
+
+// =========================================================================
+// CORE DATA ROUTES
+// =========================================================================
+
 // ROUTE 1: Handle new transmittal records (POST)
 app.post('/api/transmittals', (req, res) => {
-  // Destructure all fields, including the PLURAL 'remarks'
   const { transaction_type, to, from, item_description, barcode_tag_number, signature_id, quantity, remarks } = req.body;
   
   if (!transaction_type || !to || !from || !item_description || !barcode_tag_number || !signature_id || !quantity) {
     return res.status(400).send({ message: 'All required fields are missing.' });
   }
 
-  // Insert query includes the 'remarks' column
   const query = `
     INSERT INTO transmittals 
     (transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id, quantity, remarks) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
   
-  // Values array includes 'remarks'
   db.query(query, [transaction_type, to, from, item_description, barcode_tag_number, signature_id, quantity, remarks], (err, result) => {
     if (err) {
       console.error('Error adding record:', err);
       return res.status(500).send({ message: 'Internal Server Error' });
     }
 
-    // Activity Logging now includes remarks
     let logAction = `Added new '${transaction_type}' record for item: ${barcode_tag_number} (Qty: ${quantity})`;
     
     if (remarks && remarks.trim() !== '') {
@@ -69,9 +88,8 @@ app.post('/api/transmittals', (req, res) => {
   });
 });
 
-// ROUTE 2: Fetch Incoming Transactions (GET /api/transactions/in) - MISSING ROUTE FIX
+// ROUTE 2: Fetch Incoming Transactions (GET /api/transactions/in)
 app.get('/api/transactions/in', (req, res) => {
-    // Selects only records where transaction_type is 'In'
     const query = "SELECT * FROM transmittals WHERE transaction_type = 'In'";
     db.query(query, (err, results) => {
         if (err) {
@@ -82,9 +100,8 @@ app.get('/api/transactions/in', (req, res) => {
     });
 });
 
-// ROUTE 3: Fetch Outgoing Transactions (GET /api/transactions/out) - MISSING ROUTE FIX
+// ROUTE 3: Fetch Outgoing Transactions (GET /api/transactions/out)
 app.get('/api/transactions/out', (req, res) => {
-    // Selects only records where transaction_type is 'Out'
     const query = "SELECT * FROM transmittals WHERE transaction_type = 'Out'";
     db.query(query, (err, results) => {
         if (err) {
@@ -95,14 +112,96 @@ app.get('/api/transactions/out', (req, res) => {
     });
 });
 
-// ROUTE 4: Generic GET route (kept for completeness)
-app.get('/api/transmittals', (req, res) => {
-    db.query('SELECT * FROM transmittals', (err, results) => {
+// ROUTE 4: Fetch All Activity Logs
+app.get('/api/activity-logs', (req, res) => {
+    const query = 'SELECT * FROM activity_logs ORDER BY timestamp DESC';
+    db.query(query, (err, results) => {
         if (err) {
-            console.error('Error fetching transmittals:', err);
+            console.error('Error fetching activity logs:', err);
             return res.status(500).send({ message: 'Internal Server Error' });
         }
         res.json(results);
+    });
+});
+
+// ROUTE 5: Fetch Transaction History by ID (No ORDER BY clause applied)
+app.get('/api/transactions/:id', (req, res) => {
+    const historyId = req.params.id;
+    const query = `
+        SELECT * FROM transmittals 
+        WHERE barcode_tag_number = ? OR signature_id = ?
+    `;
+    db.query(query, [historyId, historyId], (err, results) => {
+        if (err) {
+            console.error('Error fetching transaction history:', err);
+            return res.status(500).send({ message: 'Internal Server Error' });
+        }
+        res.json(results);
+    });
+});
+
+
+// =========================================================================
+// CSV DOWNLOAD ROUTES (Requires json2csv)
+// =========================================================================
+
+// ROUTE 6: Download ALL Transmittals as CSV
+app.get('/api/transmittals/download/all', (req, res) => {
+    const query = 'SELECT * FROM transmittals';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching data for CSV:', err);
+            return res.status(500).send('Database error.');
+        }
+        generateCsvResponse(res, results, 'all_records.csv');
+    });
+});
+
+// ROUTE 7: Download Transaction History by ID as CSV
+app.get('/api/transactions/:id/download', (req, res) => {
+    const historyId = req.params.id;
+    const query = `
+        SELECT * FROM transmittals 
+        WHERE barcode_tag_number = ? OR signature_id = ?
+    `;
+    
+    db.query(query, [historyId, historyId], (err, results) => {
+        if (err) {
+            console.error('Error fetching data for history CSV:', err);
+            return res.status(500).send('Database error.');
+        }
+        generateCsvResponse(res, results, `history_${historyId}.csv`);
+    });
+});
+
+// ROUTE 8: Download Search Results as CSV
+app.get('/api/search/download', (req, res) => {
+    const searchQuery = req.query.query || '';
+    
+    // If query is empty, treat it as 'Download All'
+    if (searchQuery.trim() === '') {
+        return res.redirect('/api/transmittals/download/all');
+    }
+
+    const searchPattern = `%${searchQuery}%`;
+    const query = `
+        SELECT * FROM transmittals 
+        WHERE 
+            to_entity LIKE ? OR 
+            from_entity LIKE ? OR 
+            item_description LIKE ? OR 
+            barcode_tag_number LIKE ? OR 
+            signature_id LIKE ? OR 
+            quantity LIKE ?
+    `;
+    const params = [searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern];
+
+    db.query(query, params, (err, results) => {
+        if (err) {
+            console.error('Error fetching search data for CSV:', err);
+            return res.status(500).send('Database error.');
+        }
+        generateCsvResponse(res, results, 'search_results.csv');
     });
 });
 
