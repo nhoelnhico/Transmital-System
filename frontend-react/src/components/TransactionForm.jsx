@@ -42,9 +42,9 @@ function TransactionForm({ onTransactionAdded }) {
     }
   };
 
-  return (
-    <section id="transaction-form-section">
-      <h2>Record a Transaction</h2>
+ return (
+    <section id="transaction-form-section">
+    <h2>Record a Transaction</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="transaction_type">Transaction Type:</label>
         <select id="transaction_type" value={formData.transaction_type} onChange={handleChange} required>
@@ -59,25 +59,27 @@ function TransactionForm({ onTransactionAdded }) {
         <input type="text" id="from" value={formData.from} onChange={handleChange} required />
         
         <label htmlFor="item_description">Item Description:</label>
-        <textarea id="item_description" value={formData.item_description} onChange={handleChange} required></textarea>
+         <textarea id="item_description" value={formData.item_description} onChange={handleChange} required></textarea>
         
         <label htmlFor="barcode_tag_number">Barcode / Tagging Number:</label>
         <input type="text" id="barcode_tag_number" value={formData.barcode_tag_number} onChange={handleChange} required />
         
         <label htmlFor="quantity">Quantity:</label>
         <input type="number" id="quantity" value={formData.quantity} onChange={handleChange} required />
-        
-        <label htmlFor="signature_id">Signature ID:</label>
-        <input type="text" id="signature_id" value={formData.signature_id} onChange={handleChange} required />
-        
-        {/* <-- ADDED: Remarks Field --> */}
+ 
+         {/* <-- ADDED: Remarks Field --> */}
         <label htmlFor="remarks">Remarks (Optional):</label>
         <textarea 
             id="remarks" 
             value={formData.remarks} 
             onChange={handleChange}>
         </textarea>
-        
+
+        <label htmlFor="signature_id">Signature ID:</label>
+         <input type="text" id="signature_id" value={formData.signature_id} onChange={handleChange} required />
+
+
+
         <button type="submit">Submit Record</button>
       </form>
     </section>
