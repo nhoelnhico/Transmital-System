@@ -3,14 +3,17 @@ const mysql = require('mysql');
 const cors = require('cors');
 
 const app = express();
-const port = 5000; // NOTE: Port updated from 3000 to 5000
+const port = 5000;
 
-// Database connection setup (Use your actual credentials)
+// =========================================================================
+// !!! CORRECTED DATABASE CONNECTION !!!
+// Using XAMPP default: user 'root', password '' (empty string), and confirmed database name.
+// =========================================================================
 const db = mysql.createConnection({
-host: 'localhost', 
- user: 'root', 
-password: '', // Correct for XAMPP (no password)
-database: 'transmittal_db'  // Correct Database Name
+  host: 'localhost', 
+  user: 'root',      
+  password: '', // <--- CORRECTED: Empty string for XAMPP default
+  database: 'transmittal_db' // <--- CORRECTED: Confirmed database name
 });
 
 db.connect(err => {
@@ -20,39 +23,38 @@ db.connect(err => {
   }
   console.log('Connected to MySQL Database.');
 });
+// =========================================================================
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Route to handle new transmittal records
+// ROUTE 1: Handle new transmittal records (POST)
 app.post('/api/transmittals', (req, res) => {
-  // 1. UPDATED: Destructure 'remarks' from the request body
+  // Destructure all fields, including the PLURAL 'remarks'
   const { transaction_type, to, from, item_description, barcode_tag_number, signature_id, quantity, remarks } = req.body;
   
-  // Basic validation (Remarks is optional)
   if (!transaction_type || !to || !from || !item_description || !barcode_tag_number || !signature_id || !quantity) {
     return res.status(400).send({ message: 'All required fields are missing.' });
   }
 
-  // 2. UPDATED: Insert query to include the 'remarks' column
+  // Insert query includes the 'remarks' column
   const query = `
     INSERT INTO transmittals 
     (transaction_type, to_entity, from_entity, item_description, barcode_tag_number, signature_id, quantity, remarks) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
   
-  // 3. UPDATED: Values array includes 'remarks'
+  // Values array includes 'remarks'
   db.query(query, [transaction_type, to, from, item_description, barcode_tag_number, signature_id, quantity, remarks], (err, result) => {
     if (err) {
       console.error('Error adding record:', err);
       return res.status(500).send({ message: 'Internal Server Error' });
     }
 
-    // 4. UPDATED: Activity Logging to include remarks
+    // Activity Logging now includes remarks
     let logAction = `Added new '${transaction_type}' record for item: ${barcode_tag_number} (Qty: ${quantity})`;
     
-    // Conditionally add remarks to the log entry
     if (remarks && remarks.trim() !== '') {
         logAction += ` | Remarks: "${remarks.trim()}"`;
     }
@@ -60,7 +62,6 @@ app.post('/api/transmittals', (req, res) => {
     db.query('INSERT INTO activity_logs (action) VALUES (?)', [logAction], (logErr) => {
       if (logErr) {
         console.error('Error logging activity:', logErr);
-        // Do not fail the main request because of a log error
       }
     });
     
@@ -68,7 +69,33 @@ app.post('/api/transmittals', (req, res) => {
   });
 });
 
-// Example GET route for transmittals (Add other routes as needed)
+// ROUTE 2: Fetch Incoming Transactions (GET /api/transactions/in) - MISSING ROUTE FIX
+app.get('/api/transactions/in', (req, res) => {
+    // Selects only records where transaction_type is 'In'
+    const query = "SELECT * FROM transmittals WHERE transaction_type = 'In'";
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching IN transactions:', err);
+            return res.status(500).send({ message: 'Internal Server Error' });
+        }
+        res.json(results);
+    });
+});
+
+// ROUTE 3: Fetch Outgoing Transactions (GET /api/transactions/out) - MISSING ROUTE FIX
+app.get('/api/transactions/out', (req, res) => {
+    // Selects only records where transaction_type is 'Out'
+    const query = "SELECT * FROM transmittals WHERE transaction_type = 'Out'";
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching OUT transactions:', err);
+            return res.status(500).send({ message: 'Internal Server Error' });
+        }
+        res.json(results);
+    });
+});
+
+// ROUTE 4: Generic GET route (kept for completeness)
 app.get('/api/transmittals', (req, res) => {
     db.query('SELECT * FROM transmittals', (err, results) => {
         if (err) {
@@ -78,6 +105,7 @@ app.get('/api/transmittals', (req, res) => {
         res.json(results);
     });
 });
+
 
 // Server start
 app.listen(port, () => {
