@@ -1,10 +1,5 @@
 /*
-  Modern Dashboard Redesign
-  - Colors: A deep blue-gray primary, soft grays, and a clean white.
-  - Layout: A simple, single-column stack that centers content.
-
   Develop by Nhico Noel Ortazon
-
 */
 :root {
   --color-primary: #1A344E;
@@ -44,12 +39,12 @@ header {
   background-color: var(--color-primary);
   color: var(--color-text-light);
   padding: 2rem 0;
-  text-align: center;
+  text-align: right;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
 }
 
 header h1 {
